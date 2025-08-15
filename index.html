@@ -1,0 +1,1350 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Portfolio of Tahir Adam Khader, a seasoned network engineer with 15 years of experience in networking, PC building, website development, gaming, and 3D printing.">
+  <meta name="keywords" content="network engineering, PC building, web development, gaming, 3D printing, Tahir Adam Khader">
+  <meta property="og:title" content="Tahir Adam Khader | Network Engineering Innovator">
+  <meta property="og:description" content="Explore the futuristic portfolio of Tahir Adam Khader, a network engineer transforming connectivity and technology with 15 years of expertise.">
+  <meta property="og:image" content="https://example.com/tahir-portfolio-og-image.jpg">
+  <title>Tahir Adam Khader | Network Engineering Innovator</title>
+  <style>
+    /* Futuristic Color Palette */
+    :root {
+      --primary: #0a0a0a;
+      --secondary: #1a1a2e;
+      --accent: #00ffff;
+      --accent2: #ff0080;
+      --accent3: #ffff00;
+      --bg: #000000;
+      --text: #ffffff;
+      --text-dim: #888888;
+      --glass: rgba(255, 255, 255, 0.05);
+      --glow: 0 0 20px rgba(0, 255, 255, 0.5);
+      --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom Cursor */
+    .cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.1s ease;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .cursor-follower {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.3s ease;
+    }
+
+    /* 3D Scene Container */
+    .scene-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      perspective: 1000px;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    /* Animated Background Grid */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 10s linear infinite;
+      transform: perspective(500px) rotateX(45deg);
+    }
+
+    @keyframes gridMove {
+      0% { transform: perspective(500px) rotateX(45deg) translateZ(0); }
+      100% { transform: perspective(500px) rotateX(45deg) translateZ(50px); }
+    }
+
+    /* Floating Particles */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(100vh) translateX(0) scale(0); }
+      50% { transform: translateY(-10vh) translateX(100px) scale(1); }
+    }
+
+    /* Neural Network Background */
+    .neural-network {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .neural-line {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.3;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Glass Morphism Elements */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: var(--glow);
+    }
+
+    /* Holographic Text Effect */
+    .holo-text {
+      background: linear-gradient(45deg, var(--accent), var(--accent2), var(--accent3));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% 200%;
+      animation: hologram 3s ease-in-out infinite;
+    }
+
+    @keyframes hologram {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Header Section */
+    header {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      z-index: 10;
+      transform: translateZ(0);
+    }
+
+    .company-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 900;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      text-shadow: var(--glow);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 20px var(--accent); }
+      to { text-shadow: 0 0 30px var(--accent), 0 0 40px var(--accent); }
+    }
+
+    .hero-name {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-title {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 400;
+      margin-bottom: 2rem;
+      color: var(--text-dim);
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 1rem;
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      min-width: 150px;
+      transform: translateY(0);
+      transition: var(--transition);
+    }
+
+    .stat-item:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: var(--glow);
+    }
+
+    .stat-number {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--accent);
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+      40% { transform: translateX(-50%) translateY(-10px); }
+      60% { transform: translateX(-50%) translateY(-5px); }
+    }
+
+    /* Content Sections */
+    .section {
+      min-height: 100vh;
+      padding: 5rem 2rem;
+      position: relative;
+      z-index: 5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* About Section */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      min-height: 80vh;
+    }
+
+    .about-visual {
+      position: relative;
+      perspective: 1000px;
+    }
+
+    .tech-cube {
+      width: 300px;
+      height: 300px;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotate3d 15s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes rotate3d {
+      0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+      33% { transform: rotateX(360deg) rotateY(0) rotateZ(0); }
+      66% { transform: rotateX(0) rotateY(360deg) rotateZ(0); }
+      100% { transform: rotateX(0) rotateY(0) rotateZ(360deg); }
+    }
+
+    .cube-face {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: var(--glass);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: var(--accent);
+    }
+
+    .cube-face:nth-child(1) { transform: translateZ(150px); }
+    .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(150px); }
+    .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(150px); }
+    .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(150px); }
+    .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(150px); }
+    .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(150px); }
+
+    .about-content {
+      space-y: 2rem;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+    }
+
+    .about-text {
+      font-size: 1.3rem;
+      line-height: 1.8;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 600;
+      text-shadow: 0 0 10px var(--accent);
+    }
+
+    /* Skills Section */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 3rem;
+      margin-top: 4rem;
+    }
+
+    .skill-card {
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 2.5rem;
+      transform: translateY(0);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      tabindex: 0;
+    }
+
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .skill-card:hover::before,
+    .skill-card:focus::before {
+      left: 100%;
+    }
+
+    .skill-card:hover,
+    .skill-card:focus {
+      transform: translateY(-15px) rotateX(5deg);
+      box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+      border-color: var(--accent);
+    }
+
+    .skill-icon {
+      font-size: 3.5rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      text-shadow: var(--glow);
+    }
+
+    .skill-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .skill-description {
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* Achievements Section */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 3rem;
+      margin-top: 4rem;
+    }
+
+    .achievement-card {
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 2.5rem;
+      transform: translateY(0);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      tabindex: 0;
+    }
+
+    .achievement-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .achievement-card:hover::before,
+    .achievement-card:focus::before {
+      left: 100%;
+    }
+
+    .achievement-card:hover,
+    .achievement-card:focus {
+      transform: translateY(-15px) rotateX(5deg);
+      box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+      border-color: var(--accent);
+    }
+
+    .achievement-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      text-shadow: var(--glow);
+    }
+
+    .achievement-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .achievement-description {
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* Nexus Section */
+    .nexus-section {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nexus-content {
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .nexus-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(4rem, 8vw, 8rem);
+      font-weight: 900;
+      margin: 2rem 0;
+      background: linear-gradient(45deg, var(--accent), var(--accent2), var(--accent3));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% 200%;
+      animation: hologram 3s ease-in-out infinite;
+    }
+
+    .nexus-tagline {
+      font-size: 1.5rem;
+      font-style: italic;
+      color: var(--accent);
+      margin-top: 2rem;
+    }
+
+    /* Projects Carousel */
+    .projects-carousel {
+      position: relative;
+      height: 450px;
+      margin: 4rem 0;
+      perspective: 1200px;
+    }
+
+    .projects-carousel:hover .carousel-track {
+      animation-play-state: paused;
+    }
+
+    .carousel-track {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      animation: carousel 20s linear infinite;
+    }
+
+    @keyframes carousel {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
+
+    .project-card {
+      position: absolute;
+      width: 350px;
+      height: 400px;
+      background: var(--glass);
+      border: 1px solid var(--accent);
+      border-radius: 15px;
+      padding: 2rem;
+      backface-visibility: hidden;
+      transform-origin: center center -200px;
+      text-align: center;
+    }
+
+    .project-card:nth-child(1) { transform: rotateY(0deg); }
+    .project-card:nth-child(2) { transform: rotateY(72deg); }
+    .project-card:nth-child(3) { transform: rotateY(144deg); }
+    .project-card:nth-child(4) { transform: rotateY(216deg); }
+    .project-card:nth-child(5) { transform: rotateY(288deg); }
+
+    .project-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .project-description {
+      color: var(--text-dim);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .project-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .project-link:hover,
+    .project-link:focus {
+      color: var(--accent2);
+      text-shadow: var(--glow);
+    }
+
+    /* Contact Section */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2.5rem;
+      margin-top: 4rem;
+    }
+
+    .contact-card {
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 2.5rem;
+      text-align: center;
+      transform: translateY(0);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      tabindex: 0;
+    }
+
+    .contact-card:hover,
+    .contact-card:focus {
+      transform: translateY(-10px);
+      box-shadow: var(--glow);
+      border-color: var(--accent);
+    }
+
+    .contact-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      text-shadow: var(--glow);
+    }
+
+    .contact-link {
+      color: var(--accent);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .contact-link:hover,
+    .contact-link:focus {
+      color: var(--accent2);
+      text-shadow: var(--glow);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      
+      .tech-cube {
+        width: 200px;
+        height: 200px;
+      }
+      
+      .cube-face {
+        width: 200px;
+        height: 200px;
+      }
+      
+      .cube-face:nth-child(1) { transform: translateZ(100px); }
+      .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(100px); }
+      .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(100px); }
+      .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(100px); }
+      .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(100px); }
+      .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(100px); }
+
+      .hero-stats {
+        gap: 1.5rem;
+      }
+
+      .skills-grid,
+      .achievements-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project-card {
+        width: 280px;
+        height: 350px;
+      }
+    }
+
+    /* Scroll Animations */
+    .fade-in-up {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-in-left {
+      opacity: 0;
+      transform: translateX(-100px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .slide-in-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .slide-in-right {
+      opacity: 0;
+      transform: translateX(100px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .slide-in-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-follower"></div>
+
+  <!-- 3D Scene Background -->
+  <div class="scene-container">
+    <div class="grid-bg"></div>
+    <div class="particles" id="particles"></div>
+    <div class="neural-network" id="neural-network"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="hero-content">
+      <div class="company-logo holo-text">◆ NEXUS TECHNOLOGIES ◆</div>
+      <h1 class="hero-name holo-text"><span class="typing">TAHIR ADAM KHADER</span></h1>
+      <p class="hero-title">NETWORK ENGINEERING INNOVATOR</p>
+      <div class="hero-stats">
+        <div class="stat-item glass">
+          <span class="stat-number">15</span>
+          <span class="stat-label">Years Experience</span>
+        </div>
+        <div class="stat-item glass">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Networks Built</span>
+        </div>
+        <div class="stat-item glass">
+          <span class="stat-number">20+</span>
+          <span class="stat-label">Websites Developed</span>
+        </div>
+        <div class="stat-item glass">
+          <span class="stat-number">100%</span>
+          <span class="stat-label">Innovation</span>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </header>
+
+  <!-- About Section -->
+  <section class="section">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual slide-in-left">
+          <div class="tech-cube">
+            <div class="cube-face"><i class="fas fa-network-wired"></i></div>
+            <div class="cube-face"><i class="fas fa-laptop-code"></i></div>
+            <div class="cube-face"><i class="fas fa-gamepad"></i></div>
+            <div class="cube-face"><i class="fas fa-print"></i></div>
+            <div class="cube-face"><i class="fas fa-server"></i></div>
+            <div class="cube-face"><i class="fas fa-code"></i></div>
+          </div>
+        </div>
+        <div class="about-content slide-in-right">
+          <h2 class="section-title holo-text">NETWORK VISIONARY</h2>
+          <p class="about-text">
+            With <span class="highlight">15 years of experience</span>, I’m a network engineer and tech enthusiast at <strong>Nexus Technologies</strong>. 
+            My journey began in Johannesburg, where my passion for technology led me to master <span class="highlight">network architecture</span>, 
+            PC building, web development, gaming, and 3D printing.
+          </p>
+          <p class="about-text">
+            I’ve designed and deployed <span class="highlight">over 50 robust networks</span>, built high-performance PCs for gaming and professional use, 
+            and developed <span class="highlight">20+ dynamic websites</span>. My expertise in 3D printing has enabled innovative prototyping, 
+            blending creativity with technical precision.
+          </p>
+          <p class="about-text">
+            As a gamer, I understand the importance of low-latency, high-performance systems. My mission is to create seamless, secure, and scalable 
+            technological solutions that empower businesses and communities. At Nexus, I’m shaping the future of connectivity and innovation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title holo-text fade-in-up">CORE PROTOCOLS</h2>
+      <div class="skills-grid">
+        <div class="skill-card fade-in-up">
+          <div class="skill-icon"><i class="fas fa-network-wired"></i></div>
+          <h3 class="skill-title">NETWORK ARCHITECTURE</h3>
+          <p class="skill-description">
+            Designing and deploying secure, scalable networks with expertise in Cisco, Juniper, and cloud-based infrastructure for enterprise solutions.
+          </p>
+        </div>
+        <div class="skill-card fade-in-up">
+          <div class="skill-icon"><i class="fas fa-laptop-code"></i></div>
+          <h3 class="skill-title">WEB DEVELOPMENT</h3>
+          <p class="skill-description">
+            Building responsive, user-centric websites using HTML, CSS, JavaScript, and frameworks like React, with a focus on performance and UX.
+          </p>
+        </div>
+        <div class="skill-card fade-in-up">
+          <div class="skill-icon"><i class="fas fa-print"></i></div>
+          <h3 class="skill-title">3D PRINTING</h3>
+          <p class="skill-description">
+            Creating prototypes and custom components using advanced 3D printing techniques, integrating CAD design and material science.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Achievements Section -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title holo-text fade-in-up">ACHIEVEMENTS</h2>
+      <div class="achievements-grid">
+        <div class="achievement-card fade-in-up">
+          <div class="achievement-icon"><i class="fas fa-trophy"></i></div>
+          <h3 class="achievement-title">Network Excellence Award</h3>
+          <p class="achievement-description">
+            Received in 2023 for designing a zero-downtime enterprise network for a global client, improving efficiency by 35%.
+          </p>
+        </div>
+        <div class="achievement-card fade-in-up">
+          <div class="achievement-icon"><i class="fas fa-certificate"></i></div>
+          <h3 class="achievement-title">CCNP Certified</h3>
+          <p class="achievement-description">
+            Earned Cisco Certified Network Professional certification, demonstrating expertise in advanced network design and security.
+          </p>
+        </div>
+        <div class="achievement-card fade-in-up">
+          <div class="achievement-icon"><i class="fas fa-gamepad"></i></div>
+          <h3 class="achievement-title">Gaming Rig Innovator</h3>
+          <p class="achievement-description">
+            Built over 100 high-performance gaming PCs, optimizing for low latency and high FPS, featured in tech communities.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nexus Section -->
+  <section class="section nexus-section">
+    <div class="container">
+      <div class="nexus-content">
+        <h2 class="section-title fade-in-up">POWERED BY</h2>
+        <div class="nexus-logo fade-in-up">NEXUS</div>
+        <p class="about-text fade-in-up">
+          Where <span class="highlight">connectivity meets innovation</span>. 
+          As a lead network engineer at Nexus Technologies, I’m building the infrastructure that powers the future of digital communication.
+        </p>
+        <p class="nexus-tagline fade-in-up">"CONNECT • INNOVATE • TRANSFORM"</p>
+        
+        <!-- Projects Carousel -->
+        <div class="projects-carousel" role="region" aria-label="Projects carousel">
+          <div class="carousel-track">
+            <div class="project-card">
+              <h4 class="project-title">CLOUD NETWORK</h4>
+              <p class="project-description">
+                Designed a scalable cloud-based network infrastructure for a multinational, reducing latency by 40%.
+              </p>
+              <a href="#cloud-network" class="project-link">Learn More</a>
+            </div>
+            <div class="project-card">
+              <h4 class="project-title">GAMING PLATFORM</h4>
+              <p class="project-description">
+                Developed a low-latency gaming server architecture, enhancing multiplayer experiences for thousands of users.
+              </p>
+              <a href="#gaming-platform" class="project-link">Learn More</a>
+            </div>
+            <div class="project-card">
+              <h4 class="project-title">3D PRINTED PC CASE</h4>
+              <p class="project-description">
+                Created a custom 3D-printed PC case with optimized airflow, showcased at a national tech expo.
+              </p>
+              <a href="#3d-printed-case" class="project-link">Learn More</a>
+            </div>
+            <div class="project-card">
+              <h4 class="project-title">E-COMMERCE SITE</h4>
+              <p class="project-description">
+                Built a high-performance e-commerce website with React, achieving 99.9% uptime and seamless UX.
+              </p>
+              <a href="#ecommerce-site" class="project-link">Learn More</a>
+            </div>
+            <div class="project-card">
+              <h4 class="project-title">NETWORK SECURITY</h4>
+              <p class="project-description">
+                Implemented advanced firewall and intrusion detection systems, reducing security breaches by 50%.
+              </p>
+              <a href="#network-security" class="project-link">Learn More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title holo-text fade-in-up">CONNECT</h2>
+      <div class="contact-grid">
+        <div class="contact-card fade-in-up" role="button" aria-label="Email contact">
+          <div class="contact-icon"><i class="fas fa-satellite-dish"></i></div>
+          <h3>NEURAL LINK</h3>
+          <p><a href="mailto:tahir.khader@icloud.com" class="contact-link">tahir.khader@icloud.com</a></p>
+        </div>
+        <div class="contact-card fade-in-up" role="button" aria-label="Phone contact">
+          <div class="contact-icon"><i class="fas fa-phone"></i></div>
+          <h3>COMMS HUB</h3>
+          <p><a href="tel:+27112721926" class="contact-link">071 272 1926</a></p>
+        </div>
+        <div class="contact-card fade-in-up" role="button" aria-label="Social media and collaborations">
+          <div class="contact-icon"><i class="fas fa-rocket"></i></div>
+          <h3>MISSION CONTROL</h3>
+          <p>
+            Open for collaborations on networking, web development, and 3D printing projects. Connect on 
+            <a href="https://linkedin.com/in/tahirkhader" class="contact-link">LinkedIn</a> or 
+            <a href="https://github.com/tahirkhader" class="contact-link">GitHub</a>.
+          </p>
+        </div>
+      </div>
+      <p class="about-text fade-in-up" style="text-align: center; margin-top: 3rem;">
+        <span class="highlight">Mission:</span> To build secure, scalable, and innovative technological solutions that connect people, 
+        empower communities, and drive the future of digital transformation.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    // Custom Cursor
+    const cursor = document.querySelector('.cursor');
+    const follower = document.querySelector('.cursor-follower');
+    let mouseX = 0, mouseY = 0;
+    let followerX = 0, followerY = 0;
+
+    let lastMove = 0;
+    document.addEventListener('mousemove', (e) => {
+      if (Date.now() - lastMove < 16) return;
+      lastMove = Date.now();
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+    });
+
+    function animateFollower() {
+      followerX += (mouseX - followerX) * 0.1;
+      followerY += (mouseY - followerY) * 0.1;
+      follower.style.left = followerX + 'px';
+      follower.style.top = followerY + 'px';
+      requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+
+    // Particle System
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const colors = ['#00ffff', '#ff0080', '#ffff00'];
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Neural Network Lines
+    function createNeuralNetwork() {
+      const networkContainer = document.getElementById('neural-network');
+      for (let i = 0; i < 20; i++) {
+        const line = document.createElement('div');
+        line.className = 'neural-line';
+        line.style.top = Math.random() * 100 + '%';
+        line.style.left = Math.random() * 100 + '%';
+        line.style.width = (100 + Math.random() * 200) + 'px';
+        line.style.transform = `rotate(${Math.random() * 360}deg)`;
+        line.style.animationDelay = Math.random() * 3 + 's';
+        networkContainer.appendChild(line);
+      }
+    }
+
+    // Scroll Animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in-up, .slide-in-left, .slide-in-right').forEach(el => {
+      observer.observe(el);
+    });
+
+    // 3D Parallax Effect
+    document.addEventListener('mousemove', (e) => {
+      if (Date.now() - lastMove < 16) return;
+      lastMove = Date.now();
+      const mouseX = e.clientX / window.innerWidth;
+      const mouseY = e.clientY / window.innerHeight;
+      
+      const gridBg = document.querySelector('.grid-bg');
+      const particles = document.querySelector('.particles');
+      
+      if (gridBg) {
+        gridBg.style.transform = `perspective(500px) rotateX(${45 + mouseY * 10}deg) rotateY(${mouseX * 5}deg)`;
+      }
+      
+      if (particles) {
+        particles.style.transform = `translateX(${mouseX * 20}px) translateY(${mouseY * 20}px)`;
+      }
+
+      document.querySelectorAll('.skill-card, .achievement-card').forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenterX = rect.left + rect.width / 2;
+        const cardCenterY = rect.top + rect.height / 2;
+        const angleX = (cardCenterY - e.clientY) / 30;
+        const angleY = (e.clientX - cardCenterX) / 30;
+        
+        card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(20px)`;
+      });
+    });
+
+    // Advanced Scroll Effects
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const parallax = scrolled * 0.5;
+      
+      const sceneContainer = document.querySelector('.scene-container');
+      if (sceneContainer) {
+        sceneContainer.style.transform = `translateY(${parallax}px)`;
+      }
+
+      const techCube = document.querySelector('.tech-cube');
+      if (techCube) {
+        const rotation = scrolled * 0.5;
+        techCube.style.transform = `rotateX(${rotation + 360 * (scrolled / 1000)}deg) rotateY(${rotation}deg) rotateZ(${rotation}deg)`;
+      }
+
+      const heroContent = document.querySelector('.hero-content');
+      if (heroContent && scrolled < window.innerHeight) {
+        const scale = 1 - (scrolled / window.innerHeight) * 0.3;
+        const opacity = 1 - (scrolled / window.innerHeight) * 1.5;
+        heroContent.style.transform = `scale(${Math.max(scale, 0.7)})`;
+        heroContent.style.opacity = Math.max(opacity, 0);
+      }
+
+      document.querySelectorAll('.neural-line').forEach((line, index) => {
+        const speed = 1 + index * 0.1;
+        line.style.transform = `rotate(${scrolled * speed * 0.1}deg)`;
+      });
+    });
+
+    // Typing Effect for Hero Text
+    function typeWriter(element, text, speed = 100) {
+      let i = 0;
+      element.innerHTML = '';
+      function type() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      type();
+    }
+
+    window.addEventListener('load', () => {
+      const typingElement = document.querySelector('.hero-name .typing');
+      if (typingElement) {
+        typeWriter(typingElement, 'TAHIR ADAM KHADER', 150);
+      }
+    });
+
+    // Glitch Effect on Hover
+    function addGlitchEffect(element) {
+      element.addEventListener('mouseenter', () => {
+        element.style.animation = 'glitch 0.3s ease-in-out';
+        setTimeout(() => {
+          element.style.animation = '';
+        }, 300);
+      });
+    }
+
+    document.querySelectorAll('.section-title').forEach(addGlitchEffect);
+
+    // Screen Flash Effect
+    function screenFlash() {
+      const flash = document.createElement('div');
+      flash.style.position = 'fixed';
+      flash.style.top = '0';
+      flash.style.left = '0';
+      flash.style.width = '100vw';
+      flash.style.height = '100vh';
+      flash.style.background = 'rgba(0, 255, 255, 0.1)';
+      flash.style.pointerEvents = 'none';
+      flash.style.zIndex = '9999';
+      flash.style.opacity = '0';
+      flash.style.transition = 'opacity 0.1s ease';
+      
+      document.body.appendChild(flash);
+      
+      setTimeout(() => {
+        flash.style.opacity = '1';
+        setTimeout(() => {
+          flash.style.opacity = '0';
+          setTimeout(() => {
+            document.body.removeChild(flash);
+          }, 100);
+        }, 50);
+      }, 10);
+    }
+
+    document.querySelectorAll('.skill-card, .contact-card, .achievement-card').forEach(card => {
+      card.addEventListener('click', screenFlash);
+      card.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          screenFlash();
+        }
+      });
+    });
+
+    // Matrix-style Number Rain
+    function createNumberRain() {
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      canvas.style.pointerEvents = 'none';
+      canvas.style.opacity = '0.1';
+      canvas.style.zIndex = '1';
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const numbers = '01';
+      const fontSize = 14;
+      const columns = canvas.width / fontSize;
+      const drops = [];
+
+      for (let x = 0; x < columns; x++) {
+        drops[x] = 1;
+      }
+
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#00ffff';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = numbers[Math.floor(Math.random() * numbers.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    // Initialize effects
+    createParticles();
+    createNeuralNetwork();
+    createNumberRain();
+
+    // Smooth Scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Additional CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes glitch {
+        0% { transform: translate(0); }
+        10% { transform: translate(-2px, 2px); }
+        20% { transform: translate(2px, -2px); }
+        30% { transform: translate(-2px, 2px); }
+        40% { transform: translate(2px, -2px); }
+        50% { transform: translate(-2px, 2px); }
+        60% { transform: translate(2px, -2px); }
+        70% { transform: translate(-2px, 2px); }
+        80% { transform: translate(2px, -2px); }
+        90% { transform: translate(-2px, 2px); }
+        100% { transform: translate(0); }
+      }
+
+      .skill-card:hover .skill-icon,
+      .achievement-card:hover .achievement-icon {
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+      }
+
+      .nexus-logo {
+        position: relative;
+      }
+
+      .nexus-logo::before,
+      .nexus-logo::after {
+        content: 'NEXUS';
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0.8;
+        animation: glitch-1 2s infinite;
+      }
+
+      .nexus-logo::before {
+        color: #ff0080;
+        z-index: -1;
+      }
+
+      .nexus-logo::after {
+        color: #00ffff;
+        z-index: -2;
+        animation: glitch-2 2s infinite;
+      }
+
+      @keyframes glitch-1 {
+        0%, 100% { transform: translate(0); }
+        10% { transform: translate(-2px, -1px); }
+        20% { transform: translate(1px, 1px); }
+        30% { transform: translate(-1px, 1px); }
+        40% { transform: translate(1px, -1px); }
+        50% { transform: translate(-2px, 1px); }
+        60% { transform: translate(1px, 1px); }
+        70% { transform: translate(-1px, -1px); }
+        80% { transform: translate(2px, 1px); }
+        90% { transform: translate(-1px, 1px); }
+      }
+
+      @keyframes glitch-2 {
+        0%, 100% { transform: translate(0); }
+        10% { transform: translate(2px, 1px); }
+        20% { transform: translate(-1px, -1px); }
+        30% { transform: translate(1px, -1px); }
+        40% { transform: translate(-1px, 1px); }
+        50% { transform: translate(2px, -1px); }
+        60% { transform: translate(-1px, -1px); }
+        70% { transform: translate(1px, 1px); }
+        80% { transform: translate(-2px, -1px); }
+        90% { transform: translate(1px, -1px); }
+      }
+
+      .stat-item::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        animation: loadingBar 3s ease-in-out infinite;
+      }
+
+      @keyframes loadingBar {
+        0% { width: 0%; }
+        50% { width: 100%; }
+        100% { width: 0%; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
